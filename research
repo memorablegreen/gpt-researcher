@@ -1,0 +1,8 @@
+#!/bin/bash
+# Usage: ./research "your question"   [report_type: research_report|detailed_report|deep]
+# Claude + DuckDuckGo + Voyage. Reuses Chris's existing keys. Saves a markdown report.
+cd "$(dirname "$0")"
+set -a; . ./.env 2>/dev/null; set +a
+Q="${1:?usage: ./research \"question\" [report_type]}"
+TYPE="${2:-research_report}"
+exec ./.venv/bin/python cli.py "$Q" --report_type "$TYPE"

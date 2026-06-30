@@ -134,6 +134,13 @@ class GenericLLMProvider:
             _check_pkg("langchain_anthropic")
             from langchain_anthropic import ChatAnthropic
 
+            # Newer Claude models (Opus 4.x, Sonnet 4.6, Haiku 4.5, Fable/Mythos)
+            # reject sampling params — they 400 on `temperature`/`top_p`/`top_k`.
+            _model = str(kwargs.get("model") or kwargs.get("model_name") or "")
+            if any(m in _model for m in ("opus-4", "sonnet-4-6", "haiku-4-5", "fable", "mythos")):
+                for _p in ("temperature", "top_p", "top_k"):
+                    kwargs.pop(_p, None)
+
             llm = ChatAnthropic(**kwargs)
         elif provider == "azure_openai":
             _check_pkg("langchain_openai")
