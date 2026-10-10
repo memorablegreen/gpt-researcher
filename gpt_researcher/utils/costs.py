@@ -36,6 +36,12 @@ ANTHROPIC_MODEL_PRICING = (
     (("claude-3-5-haiku",), 0.8, 4.0),
 )
 
+# Models whose whole call bills at a higher rate once the prompt passes a size:
+# (patterns, prompt tokens above which it applies, input $/MTok, output $/MTok).
+ANTHROPIC_LONG_PROMPT_PRICING = (
+    (("claude-haiku-5-5",), 100_000, 0.50, 2.50),
+)
+
 ANTHROPIC_US_INFERENCE_GEO_MODELS = (
     "claude-opus-4-7",
     "claude-opus-4-6",
@@ -159,6 +165,11 @@ def calculate_anthropic_cost(
         return None
 
     input_price_per_mtok, output_price_per_mtok = pricing
+    normalized_model_name = (model_name or "").lower()
+    for patterns, above, long_input, long_output in ANTHROPIC_LONG_PROMPT_PRICING:
+        if usage["input_tokens"] > above and any(pattern in normalized_model_name for pattern in patterns):
+            input_price_per_mtok, output_price_per_mtok = long_input, long_output
+            break
     multiplier = _get_anthropic_pricing_multiplier(model_name, request_options=request_options)
     input_cost = usage["input_tokens"] * input_price_per_mtok / 1_000_000
     output_cost = usage["output_tokens"] * output_price_per_mtok / 1_000_000
