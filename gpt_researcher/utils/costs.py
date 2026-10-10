@@ -18,6 +18,12 @@ EMBEDDING_COST = 0.02 / 1000000  # Assumes new ada-3-small
 logger = logging.getLogger(__name__)
 
 ANTHROPIC_MODEL_PRICING = (
+    (("claude-opus-5-5",), 4.0, 20.0),
+    (("claude-sonnet-5-5",), 2.0, 10.0),
+    (("claude-haiku-5-5",), 0.10, 0.50),  # prompts up to 100k tokens; $0.50 / $2.50 above
+    (("claude-opus-5",), 5.0, 25.0),
+    (("claude-sonnet-5",), 2.0, 10.0),
+    (("claude-opus-4-8",), 5.0, 25.0),
     (("claude-opus-4-7",), 5.0, 25.0),
     (("claude-opus-4-6",), 5.0, 25.0),
     (("claude-opus-4-5", "claude-4-opus"), 5.0, 25.0),
